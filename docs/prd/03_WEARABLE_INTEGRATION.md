@@ -1,138 +1,296 @@
-# PRD: Wearable Integration (Garmin Focus)
+# PRD: Wearable Data Integration & APIs
 
 ## 1. Introduction
-This document outlines the product requirements for the RunningCoach wearable experience. The wearable app serves as the **primary interface during training**, acting as a "Coach on the Wrist." It is not merely a data logger; it is an active guidance system that ensures athletes adhere to the prescribed training plan, specifically managing intensity and duration in real-time.
+This document defines the integration layer for ingesting health and activity data from wearable devices and fitness platforms. RunningCoach operates as a **wearable-agnostic** platform, synthesizing data from multiple sources to feed the Adaptive Training Engine.
 
-## 2. Strategic Focus & Supported Devices
-For the initial release, we will focus **exclusively on the Garmin ecosystem**, leveraging its dominance in the serious running market and the robust capabilities of the Connect IQ (CIQ) platform.
+**Important:** This PRD focuses on backend API integration and data normalization. Native watch applications are considered future enhancements and are not part of the initial scope.
 
-### 2.1. Primary Platform (Phase 1)
-*   **Garmin (Connect IQ):** A dedicated Device App (not just a Data Field) to allow full control over the UI, bi-directional communication, and custom sensor handling.
-*   **Target Devices:** Must support MIP (Memory in Pixel) and AMOLED displays (Forerunner 245/255/265/945/955/965, Fenix 6/7/8, Epix, Venu 2/3).
+## 2. Core Integration Principles
 
-### 2.2. Future Scope (Phase 2+)
-*   Apple Watch (watchOS)
-*   Wear OS (Samsung, Pixel Watch)
-*   Coros & Suunto (API integration)
+### 2.1. Platform-Agnostic Approach
+*   Support multiple wearable ecosystems simultaneously per user
+*   Normalize vendor-specific data formats into unified internal schema
+*   No dependency on any single vendor for core functionality
+*   Graceful degradation when specific data sources unavailable
 
-## 3. Core User Experience Principles
-1.  **Glanceability:** Runners moving at speed cannot read small text. UI must rely on **color**, **position**, and **large typography**.
-2.  **Actionable Feedback:** Don't just show "HR: 165". Show "HR: 165 (High) -> Slow Down".
-3.  **Offline Independence:** The watch must be able to guide a full workout (Run or Strength) without the phone present.
-4.  **Frictionless Sync:** Workouts sync to the watch automatically; completed data syncs back immediately upon reconnection.
+### 2.2. Data Priority Hierarchy
+When multiple sources provide the same metric, use this priority order:
+1. **Chest Strap/External Sensors:** Most accurate for HR, HRV
+2. **Wearable Watch (worn during activity):** GPS, pace, cadence, optical HR
+3. **Manual User Entry:** Session RPE, subjective recovery, notes
+4. **Overnight Wearable:** Sleep data, morning HRV, resting HR (if worn)
+5. **Inferred/Estimated:** Fallback calculations when direct data unavailable
 
-## 4. Data Collection & Synchronization
+### 2.3. Synchronization Strategy
+*   **Real-Time Webhooks:** Preferred method for immediate activity import
+*   **Periodic Polling:** Backup mechanism (every 15-60 minutes)
+*   **Manual Sync:** User-initiated on-demand refresh
+*   **Bidirectional:** Support sending planned workouts to compatible platforms
 
-### 4.1. Real-Time Data Collection
-The app must collect high-fidelity data at **1Hz (1 sample per second)** to ensure accurate load calculation and biomechanical analysis.
+## 3. Primary Integration: Garmin Health API
 
+### 3.1. Why Garmin First
+*   Dominant market share among serious runners (Forerunner, Fenix, Epix series)
+*   Robust Health API with extensive data access
+*   Proven reliability and real-time webhook support
+*   Bidirectional capability (push structured workouts to device calendar)
+
+### 3.2. Authentication & Connection
+*   **OAuth 2.0:** User grants RunningCoach access to their Garmin Connect account
+*   **Scopes Required:**
+    *   `activities:read` - GPS tracks, pace, HR, cadence, power
+    *   `dailies:read` - RHR, HRV, sleep, Body Battery
+    *   `workouts:write` - Push structured workouts to Garmin calendar
+*   **Token Management:** Store access/refresh tokens encrypted at rest
+
+### 3.3. Data Points Ingested
+
+#### Activity Data (Post-Workout)
 *   **Core Metrics:**
-    *   **Heart Rate:** 1Hz (Internal optical or external strap via ANT+/BLE).
-    *   **GPS:** 1Hz (Lat/Lon, Altitude, Speed, Heading).
-    *   **Cadence:** Steps per minute.
-    *   **Power:** Running Power (if supported by device/accessory).
-    *   **R-R Intervals:** For HRV analysis (if hardware supports).
-*   **Strength/Plyo Metrics:**
-    *   **Accelerometer:** Raw 3-axis acceleration (for jump count/height estimation in plyometrics - *feasibility to be validated*).
-    *   **Rep Counting:** Auto-detection of reps (leveraging Garmin's native algorithms if accessible, or manual input).
+    *   Activity type (running, cycling, swimming, strength, etc.)
+    *   Start time, duration, distance
+    *   GPS track (lat/lon samples at 1Hz)
+    *   Heart rate stream (average, max, time in zones)
+    *   Pace/speed stream
+    *   Cadence, vertical oscillation, ground contact time (if available)
+    *   Elevation gain/loss
+    *   Running power (if supported)
+*   **Metadata:** Device model, activity name, notes
 
-### 4.2. Synchronization Modes
-The system must handle two distinct scenarios seamlessly.
+#### Daily Health Metrics (Morning/Overnight)
+*   **Resting Heart Rate (RHR):** Lowest HR during sleep
+*   **Heart Rate Variability (HRV):** RMSSD or SDNN during sleep
+*   **Sleep Score:** Total duration, sleep stages (light/deep/REM), quality score
+*   **Body Battery:** Garmin proprietary stress/recovery metric (optional)
+*   **Stress Score:** Daily stress levels
 
-#### Mode A: Connected (Phone Present)
-*   **Scenario:** Athlete runs with phone in pocket/belt.
-*   **Behavior:**
-    *   **Live Bridge:** Watch sends real-time telemetry (HR, Pace, Location) to the Phone App via Bluetooth Low Energy (BLE).
-    *   **Audio Cues:** Phone generates high-quality audio cues (Text-to-Speech) based on watch triggers.
-    *   **Instant Upload:** Workout is uploaded to the cloud via the Phone's internet connection immediately upon finish.
+### 3.4. Webhook Configuration
+*   **Trigger:** Garmin sends webhook immediately when:
+    *   New activity uploaded to Garmin Connect
+    *   Daily summary available (morning HRV, RHR, sleep)
+*   **Endpoint:** `POST /webhooks/garmin`
+*   **Payload:** Activity ID or daily summary reference
+*   **Backend Action:** Fetch full data via Garmin Health API, normalize, store
+*   **Idempotency:** Handle duplicate webhooks using `activity_id` or `summary_date`
 
-#### Mode B: Standalone (No Phone)
-*   **Scenario:** Athlete leaves phone at home.
-*   **Behavior:**
-    *   **Local Storage:** Workout data is recorded to a local `.fit` file on the watch storage.
-    *   **On-Device Feedback:** Watch provides all necessary alerts via Vibration and Tone (Beeps).
-    *   **Store & Forward:** Upon returning within range of the phone, the Connect IQ app initiates a sync via the Garmin Connect Mobile (GCM) SDK to transfer the `.fit` file to the Phone App, which then uploads to the Cloud.
+### 3.5. Pushing Planned Workouts to Garmin
+*   **Format:** Garmin FIT Workout format (structured steps)
+*   **Content:**
+    *   Warm-up: 10 min easy
+    *   Work: 4 × 5 min @ Threshold HR + 2 min recovery
+    *   Cool-down: 10 min easy
+*   **Sync Frequency:** Push next 7 days of workouts daily at midnight UTC
+*   **Display:** Appears in Garmin Calendar, guides watch during activity
 
-## 5. Detailed Screen Definitions
+## 4. Apple Health Integration
 
-### 5.1. Running Screens
+### 4.1. Integration Approach
+Apple does not provide cloud-to-cloud API access. Integration occurs via **mobile client**:
+*   iOS app uses HealthKit framework to read data locally
+*   Mobile app syncs data to RunningCoach backend via internal sync API
+*   Data stored on-device until uploaded
 
-#### Screen 1: Pre-Run (Context & Readiness)
-*   **Goal:** Confirm GPS lock, sensor connection, and workout selection.
-*   **UI Elements:**
-    *   **Header:** "Today: [Workout Name]" (e.g., "Tempo Run")
-    *   **Status Indicators:** GPS (Red/Green), HR (Icon), Phone (Icon).
-    *   **Action:** Large "START" prompt.
-    *   **Readiness:** "Condition: Green" (Synced from backend).
+### 4.2. Data Points Ingested
+*   **Activities:** Running workouts, distance, duration, HR (if Apple Watch worn)
+*   **Health Metrics:** Resting HR, HRV (morning readings from Apple Watch)
+*   **Sleep:** Sleep analysis duration and quality
+*   **Nutrition:** Calorie intake (if user logs via Apple Health)
 
-#### Screen 2: Active Run (The Dashboard)
-*   **Layout:** 3-Field Grid (Customizable, but defaults to):
-    *   **Top (Primary - Large):** **Pace** (or Power). Background color indicates adherence (Green=Good, Red=Fast, Blue=Slow).
-    *   **Middle (Intensity - Bar):** **Heart Rate** + Zone Gauge.
-    *   **Bottom (Context):** **Lap Distance** / **Time Remaining**.
-*   **Alerts:** Full-screen overlay + Vibe/Tone for "Zone Exit" or "Interval Change".
+### 4.3. Limitations
+*   No webhooks—requires app to be opened periodically for sync
+*   HRV only available if Apple Watch worn overnight
+*   Less granular data than dedicated running watches
 
-#### Screen 3: Interval Guidance
-*   **Trigger:** Appears 5s before interval change.
-*   **UI:**
-    *   **Big Text:** "GO!" or "REST"
-    *   **Target:** "Target: 4:15/km"
-    *   **Countdown:** "Time: 3:00"
-*   **Interaction:** Lap button skips to next step.
+## 5. Additional Wearable Platforms (Phase 2+)
 
-#### Screen 4: Post-Run RPE (Mandatory)
-*   **Trigger:** Immediately after stopping and saving.
-*   **UI:** Vertical list or Arc Slider.
-    *   "How hard was that?"
-    *   Selection: 1 (Easy) to 10 (Max).
-    *   **Constraint:** Cannot exit until selected.
+### 5.1. Strava (Aggregator)
+*   **Use Case:** Many runners already sync everything to Strava
+*   **Integration:** Strava API v3
+*   **Data:** Activities from any device synced to Strava
+*   **Limitation:** Aggregated data, may duplicate other sources
 
-### 5.2. Strength & Plyometrics Screens
-*New section specifically for the Strength PRD requirements.*
+### 5.2. Fitbit
+*   **Integration:** Fitbit Web API
+*   **Data:** Activities, HR, sleep, HRV (limited availability)
 
-#### Screen 1: Exercise View
-*   **Goal:** Guide the user through the current set.
-*   **UI Elements:**
-    *   **Header:** Exercise Name (e.g., "Nordic Curls").
-    *   **Central:** **Reps Target** (e.g., "5 Reps").
-    *   **Footer:** Weight/Resistance (e.g., "Bodyweight" or "20kg").
-*   **Interaction:** Press "Lap" button to complete set.
+### 5.3. Polar, Suunto, Coros
+*   **Integration:** Via their respective cloud APIs
+*   **Priority:** Based on user demand
 
-#### Screen 2: Rest Timer
-*   **Trigger:** Auto-starts after completing a set.
-*   **UI Elements:**
-    *   **Countdown:** Large timer (e.g., "1:30").
-    *   **Next Up:** Preview of next exercise.
-    *   **Skip:** Button to skip rest if ready.
+### 5.4. Whoop, Oura
+*   **Focus:** Recovery and readiness metrics (HRV, sleep, strain)
+*   **Integration:** APIs available for recovery-focused data
 
-#### Screen 3: Plyometric Counter (Experimental)
-*   **Goal:** Track contacts/jumps.
-*   **UI Elements:**
-    *   **Counter:** "Jumps: 12/20".
-    *   **Feedback:** "Higher!" (if accelerometer detects low flight time - *future feature*).
-*   **Fallback:** Manual input of reps completed if auto-detection fails.
+## 6. Data Normalization & Storage
 
-## 6. Technical Architecture (Garmin Connect IQ)
+### 6.1. Vendor-Agnostic Schema
+Normalize all wearable data into RunningCoach internal format:
 
-### 6.1. App Structure
-*   **Type:** Device App (allows full UI control).
-*   **Language:** Monkey C.
-*   **SDK:** Connect IQ 4.x (System 5 preferred).
+**Activity Schema:**
+```json
+{
+  "activity_id": "uuid",
+  "user_id": "uuid",
+  "source": "garmin|apple_health|strava|manual",
+  "external_id": "vendor_activity_id",
+  "activity_type": "running|cycling|swimming|strength|other",
+  "start_time": "ISO8601",
+  "duration_seconds": 3600,
+  "distance_meters": 10000,
+  "elevation_gain_meters": 150,
+  "avg_heart_rate": 145,
+  "max_heart_rate": 170,
+  "avg_pace_per_km": 360,
+  "gps_track": "JSONB or geospatial format",
+  "heart_rate_stream": [120, 125, 130, ...],
+  "cadence_avg": 178,
+  "rpe": null, // User-provided post-workout
+  "notes": "Felt strong today"
+}
+```
 
-### 6.2. Data Flow
-1.  **Plan Ingestion:**
-    *   Phone App fetches JSON plan from Backend.
-    *   Phone App sends JSON payload to Watch App via GCM (Communications Module).
-    *   Watch App persists plan to `Storage`.
-2.  **Execution:**
-    *   Watch App runs the session, recording to `ActivityRecording` session.
-    *   Custom fields (RPE, Plyo Counts) added as `DeveloperFields` to the `.fit` file.
-3.  **Upload:**
-    *   **Scenario A (GCM):** Watch passes `.fit` file to GCM -> Garmin Cloud -> Webhook -> Our Backend.
-    *   **Scenario B (Direct):** Watch passes payload to Phone App via GCM `transmit` -> Phone App -> Our Backend (Preferred for immediate feedback, but Scenario A is the robust fallback).
+**Daily Health Schema:**
+```json
+{
+  "user_id": "uuid",
+  "date": "2025-01-15",
+  "resting_hr": 48,
+  "hrv_rmssd": 65,
+  "sleep_duration_minutes": 450,
+  "sleep_quality_score": 8,
+  "morning_recovery_rating": 7,
+  "soreness_rating": 3
+}
+```
 
-## 7. Success Metrics
-*   **Reliability:** < 0.1% crash rate on supported devices.
-*   **Sync Speed:** "No Phone" runs sync within 60 seconds of phone reconnection.
-*   **Data Quality:** < 1% of runs missing HR or GPS data (excluding indoor mode).
-*   **Adherence:** > 90% of Strength sessions have sets/reps confirmed via watch.
+### 6.2. Conflict Resolution
+When multiple sources provide same metric:
+*   Use data priority hierarchy (chest strap > watch > manual)
+*   Store source attribution for each metric
+*   Allow manual override for any auto-imported value
+
+### 6.3. Gap Handling
+**Missing RPE:** Cannot calculate internal load without RPE
+*   Create notification task for user: "Rate your workout from [date]"
+*   Do not calculate ACWR until RPE provided
+*   Reminder persists until completed
+
+**Missing HRV/Sleep:** Non-critical, use fallback metrics
+*   Traffic light system uses available markers only
+*   Downweight missing metrics in decision algorithm
+
+## 7. Data Validation & Quality Control
+
+### 7.1. Anomaly Detection
+Flag suspicious data for review:
+*   HR above 220 bpm (likely sensor error)
+*   Pace faster than 2:30/km (GPS artifact)
+*   Distance > 50km without ultra-race context
+*   Negative elevation gain
+
+### 7.2. GPS Track Cleaning
+*   Remove obviously erroneous points (teleportation artifacts)
+*   Smooth pace calculations using moving averages
+*   Calculate Grade Adjusted Pace (GAP) for hilly routes
+
+### 7.3. User Review
+*   Display flagged activities with "Data Quality Warning"
+*   Allow user to accept, edit, or delete
+*   Learn from user corrections to improve detection
+
+## 8. Privacy & Security
+
+### 8.1. Data Minimization
+*   Only request scopes necessary for features
+*   Do not store granular GPS tracks long-term (aggregate to route summaries after 90 days)
+*   Allow users to disable specific data collection (e.g., GPS track storage)
+
+### 8.2. Token Security
+*   OAuth tokens encrypted at rest (AES-256)
+*   Tokens never exposed to client applications
+*   Automatic token refresh handled server-side
+*   Revocation support when user disconnects device
+
+### 8.3. User Control
+*   **Disconnect:** User can revoke access anytime (deletes tokens, stops sync)
+*   **Data Deletion:** Option to delete historical imported data
+*   **Selective Sync:** Choose which metrics to import (e.g., disable sleep tracking)
+
+## 9. Scalability & Reliability
+
+### 9.1. Webhook Reliability
+*   **Retry Logic:** Vendors may retry failed webhooks
+*   **Idempotency:** Use `external_id` to prevent duplicate processing
+*   **Queue-Based:** Enqueue webhook payloads, process asynchronously
+
+### 9.2. Rate Limiting
+*   Respect vendor API rate limits (typically 100-1000 requests/hour)
+*   Implement exponential backoff on failures
+*   Cache frequently accessed data (user profiles, device info)
+
+### 9.3. Polling Fallback
+If webhooks fail or unsupported:
+*   Poll for new activities every 15 minutes during active hours
+*   Poll for daily summaries once per day at 6 AM local time
+*   Reduce polling frequency during sleep hours
+
+## 10. Technical Architecture
+
+### 10.1. Integration Service Components
+*   **API Gateway:** Handles webhook receivers, OAuth flows
+*   **Normalization Engine:** Converts vendor formats to internal schema
+*   **Sync Scheduler:** Manages polling fallback
+*   **Data Validator:** Quality control and anomaly detection
+*   **User Notification Service:** Prompts for missing RPE
+
+### 10.2. API Endpoints
+*   `POST /webhooks/garmin` - Garmin webhook receiver
+*   `POST /webhooks/strava` - Strava webhook receiver
+*   `GET /integrations/status` - Check connection status for all linked devices
+*   `POST /integrations/garmin/connect` - Initiate OAuth flow
+*   `DELETE /integrations/garmin/disconnect` - Revoke access
+*   `POST /integrations/sync-now` - Manual sync trigger
+
+### 10.3. Data Flow
+```
+[Wearable Device]
+    ↓ (auto-sync)
+[Vendor Cloud: Garmin Connect / Apple Health / Strava]
+    ↓ (webhook or API poll)
+[RunningCoach Integration Service]
+    ↓ (normalize & validate)
+[RunningCoach Main Database]
+    ↓ (trigger processing)
+[Adaptive Training Engine]
+```
+
+## 11. Future Enhancements (Post-MVP)
+
+### 11.1. Smart Watch Applications
+*   **Garmin Connect IQ App:** Native watch app for real-time guidance
+*   **Apple Watch App:** watchOS companion app
+*   **Wear OS App:** For Samsung, Pixel Watch
+*   **Note:** These are separate products requiring dedicated development teams
+
+### 11.2. Advanced Sensor Integration
+*   **Running Power Meters:** Stryd, Garmin RD Pod
+*   **Continuous Glucose Monitors:** Supersapiens for fueling insights
+*   **Smart Scales:** Withings, Garmin Index for weight/body composition trends
+
+### 11.3. AI-Powered Form Analysis
+*   Video upload and gait analysis
+*   Cadence and vertical oscillation optimization recommendations
+
+## 12. Success Metrics
+*   **Integration Reliability:** >99.5% webhook delivery success rate
+*   **Data Freshness:** Activities imported within 5 minutes of completion (via webhook)
+*   **User Satisfaction:** >85% of users successfully connect at least one wearable
+*   **Data Quality:** <1% of activities require manual correction due to anomalies
+*   **RPE Collection:** >80% of activities have RPE logged within 30 minutes
+
+## 13. Related PRDs
+*   [00_OVERARCHING_VISION.md](./00_OVERARCHING_VISION.md) - Wearable-agnostic philosophy
+*   [02_BACKEND_CORE.md](./02_BACKEND_CORE.md) - Integration service architecture
+*   [05_SYNC_INFRASTRUCTURE.md](./05_SYNC_INFRASTRUCTURE.md) - Internal sync after wearable data imported
+*   [06_ADAPTIVE_TRAINING_ENGINE.md](./06_ADAPTIVE_TRAINING_ENGINE.md) - Consumes wearable data for decisions
+*   [13_EXTERNAL_INTEGRATIONS.md](./13_EXTERNAL_INTEGRATIONS.md) - Additional external API integrations

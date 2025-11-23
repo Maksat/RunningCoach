@@ -1,142 +1,339 @@
-# PRD: Sync Infrastructure & Integrations
+# PRD: Internal Sync Infrastructure
 
 ## 1. Introduction
-This document defines the architecture for data synchronization in the RunningCoach ecosystem. It covers two distinct domains:
-1.  **Internal Sync:** Synchronization between the Mobile Client (Thin Client) and the Backend "Brain".
-2.  **External Integrations:** Ingestion and synchronization of data from third-party services (Garmin, Ahotu, MyFitnessPal, Weather).
+This document defines the architecture for data synchronization between the Mobile Client (Thin Client) and the Backend "Brain". The sync infrastructure enables offline-first functionality while maintaining data consistency across devices and ensuring the backend remains the authoritative source for complex calculations and training plans.
+
+**Scope:** This PRD covers internal client-backend synchronization only. External integrations (wearables, weather APIs, race databases, etc.) are covered in [13_EXTERNAL_INTEGRATIONS.md](./13_EXTERNAL_INTEGRATIONS.md).
 
 ## 2. Core Principles
 *   **Offline First:** The mobile application must be fully functional without an internet connection. The local database is the single source of truth for the UI.
 *   **Backend Authority:** The backend is the ultimate source of truth for complex calculations, training plans, and long-term data storage.
-*   **Seamless Integration:** External data ingestion should happen automatically in the background without requiring manual user intervention after initial setup.
-*   **Extensibility:** The system must be designed to easily add new providers (e.g., Apple Health, Strava, Whoop) in the future.
+*   **Seamless Experience:** Sync happens automatically in the background without requiring manual user intervention.
+*   **Conflict-Resistant:** Design data model and sync protocol to minimize conflicts; resolve intelligently when they occur.
 
-## 3. Internal Sync Architecture (Client <-> Backend)
+## 3. Offline-First Data Model
 
-### 3.1. Offline-First Data Model
-*   **Local Storage:** The mobile client uses a local database (e.g., SQLite, Realm) to store:
-    *   The current training plan (next 4-8 weeks).
-    *   Recent activity logs.
-    *   User profile and settings.
-    *   Pending changes (queue of actions to sync).
-*   **Read/Write Operations:** All UI interactions read from and write to the local database immediately.
+### 3.1. Local Storage (Mobile Client)
+*   **Technology:** SQLite (Android/iOS), Realm, or WatermelonDB
+*   **Stored Data:**
+    *   Current training plan (next 4-8 weeks of scheduled workouts)
+    *   Recent activity logs (last 90 days)
+    *   Daily metrics (readiness, sleep, soreness for last 90 days)
+    *   User profile and settings
+    *   Pending changes queue (actions waiting to sync)
+    *   Cached static content (exercise library videos, nutritional guidance, coach notes templates)
 
-### 3.2. Synchronization Protocol
-*   **Delta Sync:** To minimize data usage and battery drain, only changed data is transmitted.
-    *   **Upstream (Client -> Backend):** Completed workouts, manual logs, plan adjustments, settings changes.
-    *   **Downstream (Backend -> Client):** New training plan adaptations, processed activity insights, external data updates.
-*   **Trigger Mechanisms:**
-    *   **Immediate:** When the user explicitly saves a workout or changes a critical setting.
-    *   **Background:** Periodic sync (e.g., every 15-60 minutes) when the app is in the background, subject to OS constraints.
-    *   **On Launch:** When the app is opened.
+### 3.2. Read/Write Operations
+*   **All UI interactions** read from and write to the local database immediately
+*   **No network dependency** for core functionality: viewing plan, logging workouts, recording daily check-ins
+*   **Optimistic UI updates:** Changes appear instantly in UI, sync happens asynchronously in background
 
-### 3.3. Conflict Resolution
-*   **Strategy:** "Smart Merge" with Backend Authority.
-*   **Scenario:** User edits a log on the phone while the backend processes a new file from Garmin.
-    *   **Resolution:** The system attempts to merge the data. If a conflict exists (e.g., different distance for the same run), the **Device Data (Garmin)** is generally preferred for objective metrics (GPS, HR), while **User Input** is preferred for subjective metrics (RPE, Notes).
-    *   **Plan Conflicts:** If the backend generates a new plan while the user is offline, the backend's plan overwrites the local plan *forward-looking*, but preserves past logs.
+### 3.3. Data Partitioning
+*   **User-specific data:** Partitioned by `user_id`, isolated per user
+*   **Shared reference data:** Exercise definitions, training zones formulas, scientific content (read-only, periodically refreshed)
+*   **Sync markers:** Each synced entity has `last_modified_at` timestamp and `sync_status` (pending/synced/conflict)
 
-## 4. External Integrations (Backend <-> 3rd Party)
+## 4. Synchronization Protocol
 
-The backend acts as the central hub, ingesting data from various sources to feed the Adaptive Training Engine.
+### 4.1. Delta Sync (Bidirectional)
+To minimize data usage and battery drain, only changed data is transmitted.
 
-### 4.1. Race Discovery & Planning (Ahotu)
-*   **Purpose:** To allow users to find target races and automatically populate their training calendar with accurate race dates, distances, and course profiles (elevation maps).
-*   **Integration Type:** API (Search & Retrieve).
-*   **Data Points:**
-    *   Race Name, Date, Location.
-    *   Distance (Marathon, Half, etc.).
-    *   Course Profile (Elevation gain/loss) - *Critical for training specificity.*
-*   **Workflow:**
-    1.  User searches for a race in the app.
-    2.  Backend queries Ahotu API.
-    3.  User selects a race.
-    4.  Backend imports race details and triggers the **Periodization Engine** to build a plan backward from the race date.
+**Upstream (Client → Backend):**
+*   Completed workouts with RPE and notes
+*   Manual activity logs
+*   Daily check-in data (recovery rating, sleep, soreness)
+*   Plan adjustments (user-initiated reschedules)
+*   Settings changes
 
-### 4.2. Activity & Health Data (Garmin Connect)
-*   **Purpose:** Primary source for objective training data and physiological metrics.
-*   **Integration Type:** Garmin Health API (Cloud-to-Cloud).
-*   **Direction:** Bidirectional.
-*   **Inbound Data (Garmin -> RunningCoach):**
-    *   **Activities:** GPS tracks, Pace, Heart Rate, Cadence, Power (if available).
-    *   **Daily Health:** Resting Heart Rate (RHR), Heart Rate Variability (HRV), Sleep Score, Sleep Duration, Body Battery.
-*   **Outbound Data (RunningCoach -> Garmin):**
-    *   **Planned Workouts:** Structured workouts (e.g., "20 min Warmup, 4x5 min Threshold, 10 min Cooldown") sent to the user's Garmin calendar. This allows the watch to guide the user during the run.
-*   **Sync Frequency:** Real-time Webhooks (Garmin notifies backend of new data) + Daily polling as backup.
+**Downstream (Backend → Client):**
+*   New/adapted training plan updates
+*   Processed activity insights (ACWR, TSB calculations)
+*   External data updates (wearable data normalized by backend)
+*   Coach's Notes for upcoming workouts
+*   Alerts and notifications (injury risk warnings, recovery week triggers)
 
-### 4.3. Nutrition & Fueling (MyFitnessPal)
-*   **Purpose:** To monitor energy availability and macronutrient balance, ensuring the athlete is fueling enough for the training load.
-*   **Integration Type:** API (OAuth2).
-*   **Data Points:**
-    *   **Daily Totals:** Calories consumed, Carbohydrates (g), Protein (g), Fat (g).
-    *   **Meal Timing:** (Optional/Future) Time of meals relative to workouts.
-*   **Privacy:** We only request daily summary data, not specific food item logs, to respect user privacy.
-*   **Usage:** The **Adaptive Engine** checks if `Calories In < Calories Out` significantly for prolonged periods (RED-S risk) or if Protein/Carb targets are missed during heavy training blocks.
+### 4.2. Synchronization Triggers
 
-### 4.4. Environmental Data (Weather Services)
-*   **Purpose:** To adjust training intensity expectations based on environmental stress (Heat, Humidity, Wind).
-*   **Integration Type:** Weather API (e.g., OpenWeatherMap, AccuWeather).
-*   **Data Points:**
-    *   Temperature, Humidity, Dew Point (to calculate "Feels Like").
-    *   Wind Speed/Direction.
-    *   Air Quality Index (AQI).
-*   **Workflow:**
-    *   **Planning:** 7-day forecast used to suggest moving long runs or hard workouts to cooler days/times.
-    *   **Pre-Run:** "Feels like" temperature displayed on the "Coach's Note" with hydration advice.
-    *   **Post-Run Analysis:** Backend adjusts the "Effort Score" (GAP - Grade Adjusted Pace + Weather adjustment). A slow run in 35°C heat might be scored as a high-performance effort.
+**Immediate Sync (High Priority):**
+*   User completes a workout and logs RPE
+*   User submits morning check-in
+*   User modifies critical settings (goal race date, available training days)
+*   Occurs when network available, retries with exponential backoff if fails
 
-## 5. Future Integrations (Roadmap)
-The architecture must support adding these providers via a plugin-like adapter pattern:
+**Background Sync (Periodic):**
+*   Every 15-60 minutes when app is in background
+*   Subject to OS constraints (iOS background refresh, Android Doze mode)
+*   Pulls down new plan adaptations and backend-calculated metrics
 
-*   **Other Wearables:** Apple Health (via Mobile Client sync), Strava (Aggregator), Fitbit, Suunto, Polar, Coros, Whoop, Oura.
-*   **Smart Scales:** Withings, Garmin Index (Weight, Body Fat % trends).
-*   **Connected Gym Equipment:** Treadmills (Zwift Run, Peloton) for indoor run accuracy.
-*   **Glucose Monitors:** CGMs (Supersapiens/Abbott) for real-time fueling insights.
+**On-Launch Sync:**
+*   Triggered when app is opened from closed state
+*   Ensures user sees most up-to-date plan and recommendations
 
-## 6. Data Privacy & Security
-*   **OAuth2:** All third-party integrations must use OAuth2 for secure authorization. We never store user passwords for external services.
-*   **Token Management:** Access and Refresh tokens are stored securely (encrypted at rest) in the backend.
-*   **Data Minimization:** We only request scopes necessary for the features (e.g., `activity:read`, `nutrition:read`).
-*   **User Control:** Users can disconnect any service at any time, which triggers a deletion of the associated tokens (and optionally historical data).
+**Manual Sync:**
+*   User-initiated "Refresh" button in app
+*   Forces immediate bidirectional sync
 
-## 7. Architecture Diagram (Mermaid)
+### 4.3. Sync Session Flow
 
-```mermaid
-graph TD
-    subgraph "Mobile Client (Thin)"
-        UI[User Interface]
-        LocalDB[(Local DB)]
-        SyncMgr[Sync Manager]
-        UI <--> LocalDB
-        LocalDB <--> SyncMgr
-    end
-
-    subgraph "Backend (Brain)"
-        API[API Gateway]
-        SyncSvc[Sync Service]
-        IngestSvc[Ingestion Service]
-        PlanEng[Adaptive Engine]
-        MainDB[(Main DB)]
-        
-        API <--> SyncSvc
-        SyncSvc <--> MainDB
-        IngestSvc --> MainDB
-        MainDB --> PlanEng
-    end
-
-    subgraph "External Providers"
-        Garmin[Garmin Connect]
-        Ahotu[Ahotu Races]
-        MFP[MyFitnessPal]
-        Weather[Weather API]
-    end
-
-    SyncMgr <==>|"Delta Sync (JSON)"| API
-    
-    Garmin <==>|"Webhooks / API"| IngestSvc
-    Ahotu -->|"API"| IngestSvc
-    MFP -->|"API"| IngestSvc
-    Weather -->|"API"| IngestSvc
-    
-    IngestSvc -.->|"Push Workouts"| Garmin
 ```
+1. Client initiates sync request
+   POST /sync/check
+   Body: { user_id, last_sync_timestamp, pending_changes_count }
+
+2. Backend responds with sync manifest
+   Response: {
+     has_updates: true/false,
+     server_changes_available: ["plan_v23", "acwr_updated", "alerts_new"],
+     accepts_client_changes: true/false,
+     server_timestamp: "2025-01-15T14:23:00Z"
+   }
+
+3. Client uploads pending changes
+   POST /sync/upload
+   Body: {
+     activities: [...],
+     daily_metrics: [...],
+     settings_changes: [...]
+   }
+
+4. Backend processes and responds
+   Response: {
+     accepted: [...],
+     conflicts: [...],
+     processing_errors: [...]
+   }
+
+5. Client downloads server updates
+   GET /sync/download?since=2025-01-14T08:00:00Z
+   Response: {
+     training_plan: {...},
+     calculated_metrics: {...},
+     alerts: [...]
+   }
+
+6. Client applies updates locally
+   - Merge non-conflicting data
+   - Resolve conflicts per conflict resolution strategy
+   - Update last_sync_timestamp
+
+7. Client marks sync complete
+   POST /sync/complete
+   Body: { sync_id, status: "success" }
+```
+
+## 5. Conflict Resolution
+
+### 5.1. Conflict-Resistant Design
+Minimize conflicts through data model design:
+*   **Append-only logs:** Activities and daily metrics are append-only (never edited after creation)
+*   **Server-generates plans:** Client never modifies training plan structure, only requests adaptations
+*   **User owns subjective data:** RPE, notes, feelings are client-authoritative
+*   **Backend owns computed data:** ACWR, TSB, recommendations are backend-authoritative
+
+### 5.2. Conflict Resolution Strategy
+
+**Strategy:** "Smart Merge" with Backend Authority for computed values, Client Authority for subjective values.
+
+**Scenario 1: Same Activity, Different Data**
+*   User edits workout on phone (adds notes) while backend processes GPS data from Garmin.
+*   **Resolution:**
+    *   Backend GPS data (distance, pace, HR) wins for objective metrics
+    *   Client notes, RPE, feeling win for subjective metrics
+    *   Merge both into final record
+
+**Scenario 2: Plan Modification Collision**
+*   User reschedules workout while offline.
+*   Backend generates new adaptive plan during same period.
+*   **Resolution:**
+    *   Backend's new plan wins (overwrites local schedule)
+    *   User's reschedule request is logged as "superseded by adaptive plan"
+    *   Display notification: "Your training plan was updated based on your recent workouts. The manual reschedule has been replaced."
+
+**Scenario 3: Duplicate Activity**
+*   Same workout imported from Garmin AND manually logged.
+*   **Resolution:**
+    *   Match by timestamp (within 10-minute window) + activity type
+    *   Wearable data takes precedence for objective metrics
+    *   Manual log preserved if it contains additional subjective data (notes, RPE if wearable lacks it)
+    *   Merge into single activity record
+
+**Scenario 4: Settings Conflict**
+*   User changes goal race date on phone and tablet simultaneously.
+*   **Resolution:**
+    *   Last-write-wins based on server timestamp
+    *   Both clients sync and adopt the latest value
+    *   Edge case: If timestamps identical (rare), client with higher `device_id` lexicographically wins
+
+### 5.3. Conflict Notification
+*   Display in-app notification when conflicts are resolved
+*   User can review conflict log: "Your manual activity log was merged with Garmin data"
+*   Provide "Undo" option for 24 hours if user disagrees with resolution
+
+## 6. Data Consistency & Integrity
+
+### 6.1. Transactional Sync
+*   Upload and download operations are atomic within their respective scopes
+*   If partial upload fails, entire batch is retried (idempotency via unique request IDs)
+*   Downloaded data applied in single local transaction (all-or-nothing)
+
+### 6.2. Idempotency
+*   All sync requests include unique `sync_request_id`
+*   Backend tracks processed requests (TTL 7 days)
+*   Duplicate requests return cached response without re-processing
+
+### 6.3. Eventual Consistency
+*   System is eventually consistent, not immediately consistent
+*   Acceptable delay: up to 15 minutes for non-critical updates
+*   Critical updates (injury alerts, illness protocols) trigger push notifications
+
+### 6.4. Data Validation
+*   Client validates data before upload (schema compliance, reasonable value ranges)
+*   Backend re-validates all uploaded data
+*   Invalid data rejected with clear error messages
+
+## 7. Bandwidth & Performance Optimization
+
+### 7.1. Compression
+*   Use gzip compression for all sync payloads (typically 70-85% reduction)
+*   Large GPS tracks use binary format (FIT file or compressed JSON)
+
+### 7.2. Incremental Updates
+*   Training plans sent as diffs, not full plans
+*   Example: "Update workout on 2025-01-20 from Tempo to Easy"
+*   Reduces typical plan update from 50KB to <1KB
+
+### 7.3. Prioritization
+*   High priority: User-generated content (workouts, check-ins)
+*   Medium priority: Backend recommendations, alerts
+*   Low priority: Static content updates (exercise videos, articles)
+
+### 7.4. Network Detection
+*   Detect connection type (WiFi, cellular, offline)
+*   On cellular: sync only high-priority data, defer large downloads
+*   On WiFi: full sync including media assets
+*   Offline: queue all changes, sync when connection restored
+
+## 8. Security
+
+### 8.1. Authentication
+*   All sync requests authenticated via JWT (access token)
+*   Tokens expire after 24 hours, refreshed automatically
+*   Device-specific tokens allow revocation (logout on one device)
+
+### 8.2. Encryption
+*   **In Transit:** TLS 1.3 for all API communication
+*   **At Rest (Device):** OS-level encryption (iOS Keychain, Android EncryptedSharedPreferences)
+*   **At Rest (Server):** Database encryption for sensitive data (HR, sleep, location)
+
+### 8.3. Access Control
+*   User data strictly partitioned by `user_id`
+*   API endpoints enforce user context from auth token
+*   No cross-user data leakage possible
+
+## 9. Offline Scenarios & Edge Cases
+
+### 9.1. Extended Offline Period (Days)
+*   Training plan cached for 4-8 weeks (sufficient for most marathon training phases)
+*   User can view and complete workouts offline
+*   Daily check-ins stored locally, queued for upload
+*   On reconnect: Bulk upload queued data, download latest plan adaptations
+
+### 9.2. Device Switching
+*   User switches from phone to tablet mid-day
+*   Last-synced data is available on new device
+*   In-progress workout not synced (prompt to complete on original device or re-log)
+
+### 9.3. App Reinstall / Device Reset
+*   User reinstalls app or gets new device
+*   On login: Full sync downloads last 90 days of data
+*   Cached media re-downloaded on-demand (lazy loading)
+
+### 9.4. Backend Downtime
+*   Client continues functioning offline
+*   Queued changes persist in local database
+*   When backend returns: Automatic retry with exponential backoff
+*   User sees status banner: "Syncing paused - will retry automatically"
+
+## 10. Technical Architecture
+
+### 10.1. Client Components
+*   **Sync Manager:** Orchestrates sync lifecycle
+*   **Local Database:** SQLite/Realm with migration support
+*   **Pending Queue:** FIFO queue of changes awaiting upload
+*   **Network Monitor:** Detects connectivity changes
+*   **Conflict Resolver:** Applies merge strategies locally
+
+### 10.2. Backend Components
+*   **Sync Service:** Handles `/sync/*` endpoints
+*   **Change Log:** Tracks server-side data changes per user
+*   **Conflict Detector:** Identifies overlapping modifications
+*   **Idempotency Cache:** Redis cache of processed sync requests (7-day TTL)
+
+### 10.3. API Endpoints
+*   `POST /sync/check` - Check for updates
+*   `POST /sync/upload` - Upload client changes
+*   `GET /sync/download` - Download server changes
+*   `POST /sync/complete` - Mark sync session complete
+*   `GET /sync/status` - Get current sync state for debugging
+
+### 10.4. Data Flow Diagram
+```
+[Mobile Client Local DB]
+    ↕ (bidirectional sync)
+[Sync Manager]
+    ↕ (HTTPS/TLS)
+[Backend Sync Service]
+    ↕
+[Main Database]
+    ← (processed data from)
+[Adaptive Training Engine]
+```
+
+## 11. Monitoring & Observability
+
+### 11.1. Metrics
+*   **Sync Success Rate:** % of successful sync sessions (target >99%)
+*   **Sync Latency:** Time from trigger to completion (target <5 seconds for typical session)
+*   **Conflict Rate:** % of syncs with conflicts (target <0.1%)
+*   **Retry Rate:** % of syncs requiring retries (indicates network issues or backend problems)
+
+### 11.2. Logging
+*   Client logs sync events with anonymized IDs
+*   Backend logs full sync session details (request ID, user ID, changes processed)
+*   Retain logs 30 days for debugging
+
+### 11.3. User-Facing Indicators
+*   Sync status icon: Green (synced), Yellow (syncing), Red (failed—will retry)
+*   Last synced timestamp: "Synced 2 minutes ago"
+*   Pending changes badge: "3 activities waiting to sync"
+
+## 12. Testing Strategy
+
+### 12.1. Unit Tests
+*   Sync Manager state transitions
+*   Conflict resolution logic
+*   Data validation rules
+
+### 12.2. Integration Tests
+*   Full sync cycle (upload → download → apply)
+*   Offline queue persistence
+*   Conflict scenarios (simulated)
+
+### 12.3. End-to-End Tests
+*   Real device testing with airplane mode toggling
+*   Multi-device sync (same user, two devices)
+*   Backend downtime simulation
+
+## 13. Success Metrics
+*   **Offline Usability:** 100% of core features work without network
+*   **Sync Reliability:** >99% success rate
+*   **Data Consistency:** Zero data loss incidents
+*   **User Satisfaction:** <1% of users report sync-related issues
+*   **Performance:** 95th percentile sync latency <10 seconds
+
+## 14. Related PRDs
+*   [00_OVERARCHING_VISION.md](./00_OVERARCHING_VISION.md) - Offline-first architectural principle
+*   [01_MOBILE_CLIENT.md](./01_MOBILE_CLIENT.md) - Client-side sync UI
+*   [02_BACKEND_CORE.md](./02_BACKEND_CORE.md) - Sync service implementation
+*   [03_WEARABLE_INTEGRATION.md](./03_WEARABLE_INTEGRATION.md) - Wearable data sync after import
+*   [13_EXTERNAL_INTEGRATIONS.md](./13_EXTERNAL_INTEGRATIONS.md) - External API integrations
