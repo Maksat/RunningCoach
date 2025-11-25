@@ -31,6 +31,7 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
     *   Injury history (Checklist: Shin splints, IT band, etc. - informs prehab recommendations).
     *   Goal Race (Date, Distance, Target Time).
     *   Days available to train (M-Su selector).
+    *   **Implementation Intentions:** "When will you run?" (e.g., "M/W/F at 7am after coffee"). Research shows this doubles adherence.
 *   **Logic:** System calculates initial "Chronic Load" baseline.
 
 ### 3.3. Device Permissions
@@ -46,7 +47,8 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
 
 **UI Structure:**
 1.  **Header:** Date | Current Phase (e.g., "Base Phase - Week 4").
-2.  **Hero Card: Readiness Status (Traffic Light System)**
+2.  **Habit Streak:** "🔥 12 Days Active" (Celebrates showing up, not just performance).
+3.  **Hero Card: Readiness Status (Traffic Light System)**
     *   **Visual:** Large circular indicator or background gradient.
     *   **States:**
         *   🟢 **Green:** "All Systems Go." (Text: "Your recovery is optimal. Stick to the plan.")
@@ -91,6 +93,9 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
     *   **Flow (Traveling):**
         *   Input: "Dates X to Y".
         *   Action: System redistributes load or switches to Maintenance Mode (min 1 high-intensity + 50% volume).
+    *   **Flow (Short on Time - "The Dial Method"):**
+        *   Action: "I only have X minutes."
+        *   System: Scales workout to fit time (e.g., 60 min run -> 20 min intense) to preserve the "instigation habit" of showing up.
 
 ### 4.3. Tab 3: "Progress" (Analytics)
 **Purpose:** Long-term tracking of adaptation and injury risk.
@@ -112,6 +117,10 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
 4.  **Performance Trends:**
     *   **Running Economy:** Graph of HR vs. Pace over time.
     *   **Lactate Threshold:** Estimated pace evolution.
+5.  **Competence Metrics (Intrinsic Motivation):**
+    *   **Pacing Consistency:** % of miles run within target zone.
+    *   **Form Check Adherence:** % of drill sessions completed.
+    *   **"Fitness Retained":** (During Injury) Visual showing % of fitness saved via cross-training.
 
 ### 4.4. Tab 4: "Library" (Resources)
 **Purpose:** Educational content and auxiliary training tools.
@@ -185,6 +194,11 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
     *   Pain < 3/10: "Monitor closely. We'll switch runs to soft surfaces/easy."
     *   Pain > 3/10: "Switching to Cross-Training Mode."
 *   **Outcome:** Plan updates to replace Runs with Aqua Jogging / Cycling sessions for X days.
+*   **Mental Recovery View:**
+    *   Dashboard transforms to "Rehab Mode".
+    *   "Training" = PT exercises + Cross-Training.
+    *   Daily Affirmation: "Recovery is your sport now."
+    *   Visual: "Fitness Retained" graph to prevent catastrophizing.
 
 ---
 

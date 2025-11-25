@@ -21,6 +21,10 @@ This document defines the core intelligence system that differentiates RunningCo
 *   **Subjective Wellness:** Identify personal patterns in recovery, sleep quality, soreness
 *   **Performance Baseline:** Initial fitness tests (e.g., 5K time trial, lactate threshold test)
 *   **No Adaptations:** During this period, follow conservative predetermined plan to gather data
+*   **Retention Focus (Weeks 1-8):**
+    *   **Goal:** Habit formation.
+    *   **Logic:** If adherence < 80%, system prioritizes *frequency* over *volume*.
+    *   **Action:** If user misses 2 sessions, reduce duration of future sessions by 25% but keep the *number* of sessions the same. "Just show up for 20 mins" is better than "Skip the 60 min run".
 
 ### 3.2. Traffic Light Decision System
 Daily readiness check integrating 4-5 markers to determine training prescription adjustment.
@@ -97,6 +101,16 @@ The engine must account for all physical stress, not just prescribed running.
     *   If Extra Load > 50% of tomorrow's planned load: **Major Adjustment** (reduce tomorrow's volume by 20-40% or convert to recovery).
 *   **Example:** User plays 90 mins soccer (RPE 7) = 630 TLU. Planned run tomorrow is 60 mins easy (RPE 3) = 180 TLU. Extra load is >300% of planned. **Action:** Cancel run, assign Rest/Recovery.
 
+### 3.5. "The Dial Method" (Habit Preservation)
+User-initiated scaling when time/motivation is low.
+*   **Trigger:** User selects "I don't have time" or "I'm not feeling it".
+*   **Logic:** Reduce volume to Minimum Effective Dose (MED) to count as "Completed".
+    *   **Easy Run:** Scale to 15-20 mins.
+    *   **Intervals:** Scale to 10 min warm-up + 1 set + 5 min cool-down.
+    *   **Strength:** Scale to 1 set of key compound movement.
+*   **Goal:** Preserve the "instigation habit" (starting) even if execution is minimal.
+*   **Scoring:** Counts as 0.5 adherence points (better than 0 for skip).
+
 ### 3.5. Failed Workout Protocols
 Systematic response to subpar workout performance:
 
@@ -163,6 +177,16 @@ Track individual adaptation to training stimuli over 8-12 weeks:
 *   After 8-12 weeks, identify top 5 most predictive markers per athlete
 *   Some respond primarily to HRV, others to sleep quality, others to mood/load patterns
 *   Adjust decision weights based on individual response patterns
+
+### 3.8. Motivation & Burnout Tracking
+*   **Input:** Daily Motivation Rating (1-10) in check-in.
+*   **Logic:**
+    *   **Drop Detected:** Motivation drops >2 points from baseline for 3 days.
+    *   **Low Absolute:** Motivation < 3/10 for 3 consecutive days.
+*   **Action (Burnout Prevention Protocol):**
+    *   Switch all "Quality Sessions" to "Fartlek/Fun Runs" (unstructured).
+    *   Remove pace/HR targets from easy runs ("Run by feel").
+    *   Coach Note: "Let's ditch the watch today. Just enjoy the movement."
 
 ### 3.8. Progression Algorithms
 

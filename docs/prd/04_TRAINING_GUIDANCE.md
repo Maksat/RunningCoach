@@ -298,6 +298,8 @@ If marathon goal = 4:00:00 (9:09/mile pace):
 *   Non-intrusive: Suggestions, not demands
 *   Celebrate progress: Acknowledge completed workouts and improvements
 *   Normalize struggles: "Tough days are part of training" messaging
+*   **Build Identity:** Use language that reinforces "runner" identity (e.g., "Runners show up, even for 15 minutes").
+
 
 **Voice Examples:**
 ✅ "Today's easy run builds aerobic capacity. Keep it conversational—this is where endurance is built."
@@ -326,6 +328,18 @@ Each scheduled workout includes expandable educational content explaining:
 *   "Research shows 80% easy, 20% hard intensity distribution produces superior marathon outcomes in elite athletes."
 *   "Tempo runs raise your lactate threshold—the pace you can sustain for 60+ minutes. Improving this by 10 seconds/mile can translate to 4-5 minutes off your marathon time."
 *   "Nordic hamstring curls reduce injury risk by 51% according to meta-analysis of 8,459 athletes."
+
+### 6.4. Psychology of Training
+**Educate users on the "Dip":**
+*   **Weeks 2-8 Warning:** "This is the hardest part. The excitement has faded, but the fitness hasn't arrived yet. Consistency now is what makes you a marathoner."
+*   **Decision Fatigue:** "Don't decide *if* you will run today. Decide *when*. Automate the decision."
+
+### 6.5. "Should I Run?" Decision Support
+**Self-Assessment Checklist (for users debating skipping):**
+1.  **Is it physical pain?** (Sharp/localized = Stop. Dull/generalized = Go).
+2.  **Is it mental fatigue?** (Stressful day = Run easy/short. "Just don't want to" = Run 10 mins then decide).
+3.  **Is it illness?** (Neck check rule).
+**Guidance:** "If it's mental, the hardest step is the first one. Commit to 10 minutes. If you still hate it, walk home. You keep the streak alive."
 
 ## 7. Workout Modification Rules
 

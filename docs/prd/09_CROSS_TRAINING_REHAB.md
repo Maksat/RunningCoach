@@ -230,6 +230,13 @@ Research-backed 5-stage protocol requiring **minimum 10 days rest** and **7 days
 
 **General Guideline:** 2-3 days recovery per day of illness
 
+### 4.4. Psychological Recovery Protocols
+Research shows psychology predicts injury outcomes better than physiology.
+*   **Reframe Identity:** "You are an athlete in training," not "an injured runner."
+*   **Process Goals:** Shift focus from "Run a marathon" (outcome) to "Complete 3 PT sessions this week" (process).
+*   **"Fitness Retained" Metric:** Display estimated fitness saved via cross-training (e.g., "You saved 92% of your aerobic base this week") to counter catastrophizing.
+*   **Social Connection:** Encourage maintaining contact with running partners even if not running (e.g., meet for coffee after their run).
+
 ### 4.3. Injury-Specific Cross-Training Guidance
 
 **Stress Fractures:**

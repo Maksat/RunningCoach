@@ -36,6 +36,11 @@ RunningCoach is an **evidence-based, adaptive training companion** designed to g
 *   **Beyond Running:** Incorporates evidence-based nutrition protocols (10-12 g/kg carb loading for 36-48 hours pre-race, 60-90g/hour during marathon using dual-source carbs, periodized protein intake 1.2-2.0 g/kg), sleep quality assessment (even without wearables via subjective ratings), and mental readiness monitoring.
 *   **Research-Backed Cross-Training:** Deep Water Running maintains marathon fitness for up to **6 weeks** without any land running (1:1 time equivalency). Cycling at 50% substitution maintains performance for 5 weeks (3:1 cycling:running ratio). Elliptical provides impact reduction with similar cardiovascular benefits (2:1 ratio). All cross-training is integrated into load calculations and ACWR monitoring.
 
+### 4.4. Psychological-First Design
+*   **Retention-Focused Architecture:** Acknowledging that 67% of dropouts occur in the first 8 weeks, the system prioritizes **habit formation over physiological optimization** during this critical window. It employs "instigation habits" (celebrating showing up) and flexible "dial methods" (shortening workouts to maintain the streak) rather than rigid compliance.
+*   **Identity-Based Motivation:** The app actively fosters "runner identity" through language and feedback, helping users transition from extrinsic motivation ("I run for health") to intrinsic motivation ("I am a runner").
+*   **Mental Recovery Protocols:** Recognizing that psychology predicts injury recovery better than physiology, the system treats rehabilitation as "training," providing process goals and "fitness retained" metrics to combat the identity loss and depression often associated with setbacks.
+
 ## 5. Key Features
 
 ### 5.1. The "Brain" (Backend)
@@ -79,6 +84,8 @@ RunningCoach is an **evidence-based, adaptive training companion** designed to g
 *   **Recovery Prediction:** Accuracy of next-day recovery predictions compared to actual reported recovery (enables model refinement using LASSO regression on top 5 individual variables).
 *   **Model Refinement Effectiveness:** Track continuous improvement by comparing prediction accuracy before and after threshold adjustments. System should demonstrate increasing accuracy over time as it learns from real-world outcomes versus theoretical models. Target: 10-15% improvement in recovery prediction accuracy within first 6 months of operation.
 *   **Variable Importance Identification:** Successfully identify individual top 5 predictive markers within 8-12 weeks of monitoring for each athlete. Target: 80%+ of users receive personalized variable importance rankings by week 12, enabling truly individualized recommendations.
+*   **Retention Rate (Critical Window):** % of users active at week 8 vs. week 1. Target: >60% (industry avg ~30%).
+*   **Return-to-Run Success:** % of injured users who successfully return to pre-injury volume within predicted timeframe without re-injury. Target: >70% (vs. 40% baseline).
 
 ## 8. Related PRDs
 *   [01_MOBILE_CLIENT.md](./01_MOBILE_CLIENT.md) - UI/UX and offline capabilities.
