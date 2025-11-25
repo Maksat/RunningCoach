@@ -195,9 +195,11 @@ This document defines the cross-training protocols and injury rehabilitation gui
 
 Research-backed 5-stage protocol requiring **minimum 10 days rest** and **7 days symptom-free** before beginning:
 
-#### Neck Check Rule
-*   **Symptoms above neck** (stuffy nose, scratchy throat): May allow easy training
-*   **Symptoms below neck** (chest congestion, body aches, fever): Demand complete rest
+#### Illness Severity Rules
+*   **Fever > 100.4°F (38°C):** ABSOLUTE REST. No exceptions.
+*   **Below Neck Symptoms:** (Chest congestion, body aches) -> Complete Rest until 24-48h symptom-free.
+*   **Above Neck Symptoms:** (Runny nose, scratchy throat) -> Caution (50% intensity).
+*   **Return Rule:** 3 days of graded return for every 1 day of illness.
 
 #### Stage 1 (Days 1-2 After Symptom-Free)
 *   Light activity only: walking or light jogging <15 min
@@ -233,11 +235,13 @@ Research-backed 5-stage protocol requiring **minimum 10 days rest** and **7 days
 **Stress Fractures:**
 *   DWR and cycling avoiding impact completely
 *   No running until medical clearance (typically 6-8 weeks)
+*   **Return Criteria:** Pain-free walking 45+ mins, radiological healing, single-leg hop 75-80% symmetry.
 
-**Plantar Fasciitis & Foot Issues:**
+**Plantar Fasciitis & Achilles Tendinopathy:**
 *   Cycling (non-weight-bearing)
 *   Rowing (seated, no impact)
 *   Swimming with pull buoy (avoid kick)
+*   **Return Criteria:** Pain ≤5/10 during activity, settles to baseline by next morning. 25 single-leg heel raises pain-free.
 
 **Hip Injuries:**
 *   Swimming with pull buoy (avoid leg drive)

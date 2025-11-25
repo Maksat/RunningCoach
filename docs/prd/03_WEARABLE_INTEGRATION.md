@@ -60,7 +60,7 @@ When multiple sources provide the same metric, use this priority order:
 #### Daily Health Metrics (Morning/Overnight)
 *   **Resting Heart Rate (RHR):** Lowest HR during sleep
 *   **Heart Rate Variability (HRV):** RMSSD or SDNN during sleep
-*   **Sleep Score:** Total duration, sleep stages (light/deep/REM), quality score
+*   **Sleep Score:** Total duration (most reliable), sleep stages (light/deep/REM - treat as estimate only), quality score
 *   **Body Battery:** Garmin proprietary stress/recovery metric (optional)
 *   **Stress Score:** Daily stress levels
 

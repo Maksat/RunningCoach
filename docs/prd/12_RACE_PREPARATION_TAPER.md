@@ -4,25 +4,29 @@
 This document defines the race preparation protocols, taper strategies, and race week/day execution plans that optimize marathon performance. Research shows proper tapering can improve performance by **2-6%** through physiological freshening while maintaining fitness.
 
 ## 2. Research Foundation
-*   **Taper Duration:** 1-2 weeks for marathon (2-3 weeks for ultra-endurance events)
-*   **Volume Reduction:** 20-30% reduction with exponential taper (not linear)
+*   **Taper Duration:** 3 weeks for marathon (optimal for 4+ minute improvement)
+*   **Volume Reduction:** 40-60% reduction with exponential taper (not linear)
 *   **Intensity Maintenance:** Keep intensity of quality sessions, reduce duration not effort
 *   **TSB Target:** Race day TSB of +10 to +25 indicates optimal freshness (athlete-specific)
 *   **Carb Loading:** Modern protocol (10-12 g/kg for 36-48 hours) doubles glycogen stores without depletion phase
 *   **HRV Response:** Should increase during taper—if it doesn't, may indicate overtraining or subclinical illness
 
-## 3. Taper Protocol (Final 1-2 Weeks)
+## 3. Taper Protocol (Final 3 Weeks)
 
 ### 3.1. Exponential Volume Reduction
 Research shows exponential taper superior to linear or step taper.
 
-**Week Before Race (Days -14 to -8):**
-*   Reduce volume to 70-80% of peak week
+**Week 1 of Taper (Days -21 to -15):**
+*   Reduce volume to 80-85% of peak week
+*   Maintain frequency, reduce duration of sessions
+
+**Week 2 of Taper (Days -14 to -8):**
+*   Reduce volume to 60% of peak week
 *   Maintain 2 quality sessions at race intensity (shortened duration)
-*   Long run reduced to 60% of normal (e.g., 20km instead of 32km)
+*   Long run reduced to 60% of normal
 
 **Race Week (Days -7 to -1):**
-*   Reduce volume to 40-50% of peak week
+*   Reduce volume to 40% of peak week
 *   1 short quality session early in week (Tuesday/Wednesday)
 *   No long run—longest run 10-13km easy
 *   Final 2-3 days: only short easy runs or complete rest

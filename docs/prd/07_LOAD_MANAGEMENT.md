@@ -66,6 +66,7 @@ This document defines the load management and monitoring system that forms the f
 ### 3.6. Training Monotony
 *   **Calculation:** Weekly mean training load ÷ weekly standard deviation
 *   **Risk Threshold:** Values >2.0 signal dangerous lack of variation
+*   **Single Run Spike:** Planned run >10% longer than any run in last 30 days = 64% higher injury risk
 *   **Danger Pattern:** High monotony + high absolute load = dramatically increased overtraining risk
 
 **Mitigation:**
@@ -114,6 +115,7 @@ This document defines the load management and monitoring system that forms the f
 *   HRV below baseline -2 SD for 2+ consecutive days
 *   Morning recovery <4/10 for 3+ consecutive days
 *   Performance drop >10% in standardized test
+*   Single Run Spike >20% (Doubling risk)
 *   TSB < -30
 *   **Action:** Reduce to recovery week protocols (40-60% normal load), prioritize sleep/nutrition, medical evaluation if needed
 
@@ -122,6 +124,7 @@ This document defines the load management and monitoring system that forms the f
 *   Muscle soreness >7/10 for 2+ days
 *   Training monotony >2.5 for 7+ days
 *   ACWR outside 0.8-1.5 range
+*   Single Run Spike 10-20%
 *   Mood disturbance increasing for 7+ days
 *   **Action:** Reduce intensity 20-30%, maintain or reduce volume 15%, add extra recovery day in next microcycle
 

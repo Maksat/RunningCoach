@@ -306,6 +306,12 @@ If marathon goal = 4:00:00 (9:09/mile pace):
 ✅ "Your HRV is lower than normal. Consider reducing today's intensity to support recovery."
 ❌ "Your HRV is terrible. Skip your workout."
 
+### 6.2. Illness & "Neck Check"
+*   **Fever > 100.4°F (38°C):** ABSOLUTE REST. No exceptions.
+*   **Below Neck Symptoms:** (Chest congestion, body aches) -> Complete Rest.
+*   **Above Neck Symptoms:** (Runny nose, scratchy throat) -> Caution (50% intensity).
+*   **Return Rule:** 3 days of graded return for every 1 day of illness.
+
 ### 6.2. Workout Rationale ("Why This Workout?")
 Each scheduled workout includes expandable educational content explaining:
 *   **Physiological Purpose:** What adaptations this workout stimulates

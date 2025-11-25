@@ -4,6 +4,8 @@
 This document defines the core intelligence system that differentiates RunningCoach from static training plans. The Adaptive Training Engine is the "brain" that translates individual readiness, response patterns, and life circumstances into daily training prescriptions, combined with real-time guidance during workout execution.
 
 ## 2. Research Foundation
+*   **Muscle-Tendon-Bone Lag:** Cardiovascular fitness improves weeks faster than tendons (months) and bones (3-6 months). Progression must be governed by the slowest adapting tissue to prevent injury.
+*   **Single-Run Spikes:** The "10% rule" for weekly volume is less predictive than single-run spikes. Increasing a single run by >10% over the longest run in the past 30 days increases injury risk by 64%.
 *   **HRV-Guided Training:** Produces 50% high responders vs. 29% for predetermined plans, with 6.2% performance improvement vs. 2.9% for fixed programs
 *   **Responder Classification:** No evidence supports "global non-responders"—non-response is measure-specific and stimulus-specific
 *   **Multi-Criteria Decisions:** Single-metric decisions are unreliable; combine 4-5 readiness markers for robust daily prescriptions
@@ -37,6 +39,7 @@ Daily readiness check integrating 4-5 markers to determine training prescription
 *   Previous workout struggled but completed
 *   Moderate fatigue (4-5/10)
 *   **Warm-up HR:** Elevated (+5-10 bpm above baseline) or significant decoupling (>5%)
+*   **Single Run Spike:** Planned run exceeds longest run in last 30 days by 10-20%
 *   Mild illness symptoms (above neck only)
 *   **Modifications:**
     *   Reduce intensity by 5-10% OR reduce volume by 20% (maintain one dimension)
@@ -49,6 +52,8 @@ Daily readiness check integrating 4-5 markers to determine training prescription
 *   Failed previous workout despite adequate effort
 *   High fatigue (≥ 6/10)
 *   Poor sleep quality for 2+ consecutive nights
+*   **Single Run Spike:** Planned run exceeds longest run in last 30 days by >20% (High Injury Risk)
+*   **Parasympathetic Overtraining:** High HRV (>1 SD above baseline) combined with Low RHR (<-5 bpm) and fatigue/poor performance
 *   Illness symptoms below neck (chest congestion, body aches, fever)
 *   **Action:**
     *   Easy running only at conversational pace for max 60 minutes
