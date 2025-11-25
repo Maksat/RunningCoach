@@ -300,8 +300,19 @@ If marathon goal = 4:00:00 (9:09/mile pace):
 *   Normalize struggles: "Tough days are part of training" messaging
 *   **Build Identity:** Use language that reinforces "runner" identity (e.g., "Runners show up, even for 15 minutes").
 
+*   **Build Identity:** Use language that reinforces "runner" identity (e.g., "Runners show up, even for 15 minutes").
 
-**Voice Examples:**
+### 6.2. Audio Guided Runs
+**Concept:** Immersive audio experiences that combine coaching cues, motivation, and music (optional).
+**Format:**
+1.  **Intro (2-5 mins):** Purpose of the run, mindset setting ("Leave the stress of the day behind").
+2.  **Middle (The Work):**
+    *   **Form Cues:** "Check your shoulders, are they relaxed?" (Every 10 mins).
+    *   **Pace Checks:** "You should be able to talk right now."
+    *   **Mindset Coaching:** "Mental Performance" clips during long runs (e.g., visualization techniques, dissociation strategies).
+3.  **Outro (2 mins):** Summary, congratulations, recovery reminder.
+
+### 6.3. Illness & "Neck Check"
 ✅ "Today's easy run builds aerobic capacity. Keep it conversational—this is where endurance is built."
 ❌ "You MUST run easy today. This is critical!"
 

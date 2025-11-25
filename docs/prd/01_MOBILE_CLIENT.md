@@ -13,7 +13,8 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
 2.  **Plan:** The forward-looking calendar. Schedule management, phase visualization.
 3.  **Progress:** Long-term analytics. ACWR, TSB, injury risk monitoring.
 4.  **Library:** Educational content. Strength routines, drills, nutrition guides.
-5.  **You:** Profile, settings, device management.
+5.  **Community:** Social features. Squads, leaderboards, friend feed.
+6.  **You:** Profile, settings, device management.
 
 ## 3. Onboarding & Setup Flow
 
@@ -33,8 +34,14 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
     *   Days available to train (M-Su selector).
     *   **Implementation Intentions:** "When will you run?" (e.g., "M/W/F at 7am after coffee"). Research shows this doubles adherence.
 *   **Logic:** System calculates initial "Chronic Load" baseline.
+*   **Assessment Protocol (Optional):** "Initial Assessment Week" option (3 runs to calibrate zones/fitness) instead of just relying on historical data.
 
-### 3.3. Device Permissions
+### 3.3. Permission Priming
+*   **Philosophy:** Explain *why* before asking.
+*   **Location:** "We need location to track your pace and distance accurately during runs." -> [Allow] -> System Dialog.
+*   **Health:** "We need health data to understand your recovery and sleep." -> [Allow] -> System Dialog.
+
+### 3.4. Device Permissions
 *   **HealthKit / Google Fit:** "We need this to import your workouts and sleep data automatically."
 *   **Notifications:** "Allow us to nudge you for morning check-ins and post-workout RPE."
 
@@ -121,8 +128,37 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
     *   **Pacing Consistency:** % of miles run within target zone.
     *   **Form Check Adherence:** % of drill sessions completed.
     *   **"Fitness Retained":** (During Injury) Visual showing % of fitness saved via cross-training.
+6.  **Gamification & Milestones:**
+    *   **Badges:** "First 10K", "Early Bird" (5am run), "Rain Runner".
+    *   **Streak:** Current active day streak.
+    *   **Personal Records:** Auto-detected fastest times (1k, 5k, 10k, HM, M).
+
+### 4.4. Tab 4: "Community" (Social)
+**Purpose:** Connection and accountability. See [14_SOCIAL_COMMUNITY.md](./14_SOCIAL_COMMUNITY.md) for full details.
+
+**UI Structure:**
+1.  **Squads:** "Marathon Group" chat and goals.
+2.  **Friend Feed:** Chronological feed of workouts.
+3.  **Leaderboards:** "Consistency" focused (e.g., "Most active days").
 
 ### 4.4. Tab 4: "Library" (Resources)
+**Purpose:** Educational content and auxiliary training tools.
+
+**UI Structure:**
+1.  **Categories:** Strength, Drills, Nutrition, Recovery.
+2.  **Strength Section:**
+    *   **Routines:** "Base Phase Strength", "Core & Hips", "Nordic Curls Progression".
+    *   **Content:** Video loops, set/rep counters.
+3.  **Drills Section:**
+    *   **Videos:** A-Skips, B-Skips, Bounding.
+    *   **Guide:** "When to do this" (e.g., "Before speed sessions").
+4.  **Nutrition Calculator:**
+    *   **Tool:** "Race Week Carb Loader".
+    *   **Input:** Weight, Race Date.
+    *   **Output:** 3-day meal plan targets (e.g., "Days 3-2 pre-race: 700g carbs/day").
+    *   **Output:** "Bike Equivalent: 90 mins at HR 130bpm".
+
+### 4.5. Tab 5: "Library" (Resources)
 **Purpose:** Educational content and auxiliary training tools.
 
 **UI Structure:**
@@ -142,7 +178,7 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
     *   **Input:** "Planned Run: 60 mins Easy".
     *   **Output:** "Bike Equivalent: 90 mins at HR 130bpm".
 
-### 4.5. Tab 5: "You" (Profile)
+### 4.6. Tab 6: "You" (Profile)
 **Purpose:** Settings and device management.
 
 **UI Structure:**

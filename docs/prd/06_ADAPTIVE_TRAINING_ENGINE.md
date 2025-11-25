@@ -208,6 +208,23 @@ Track individual adaptation to training stimuli over 8-12 weeks:
 *   Close monitoring for warning signs
 *   ACWR up to 1.5 acceptable, flag anything >2.0
 
+### 3.9. Age-Appropriate Adaptation (Masters Athletes)
+**Logic:** Recovery capacity declines with age.
+*   **Threshold:** Age > 40 (Configurable).
+*   **Cycle Structure:** Default to **3-week cycle** (2 weeks build, 1 week recovery) instead of standard 4-week cycle.
+*   **Recovery Metrics:** Increase weight of "Muscle Soreness" and "Sleep Quality" by 20% in readiness algorithm.
+*   **Long Run Spacing:** Suggest 9-10 day spacing for 20+ mile runs instead of 7 days.
+
+### 3.10. Multi-Goal Support
+**Concept:** Athletes often have "Tune-up" races before their "A Race".
+*   **A Race:** Primary Goal (e.g., Marathon in Oct).
+*   **B Race:** Tune-up (e.g., Half Marathon in Aug).
+*   **C Race:** Training Run (e.g., Local 5k).
+*   **Logic:**
+    *   **B Race Taper:** Engine schedules a "Mini-Taper" (3-4 days reduced volume) without disrupting the macro-cycle.
+    *   **Post-Race:** 2-3 days recovery, then resume plan.
+    *   **C Race:** Treated as a "Tempo Run" or "Speed Workout" within the existing plan. No taper.
+
 ### 3.9. Recovery Prediction (ML Phase)
 After collecting 12-16+ weeks of data:
 

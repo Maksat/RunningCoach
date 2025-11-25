@@ -40,6 +40,7 @@ RunningCoach is an **evidence-based, adaptive training companion** designed to g
 *   **Retention-Focused Architecture:** Acknowledging that 67% of dropouts occur in the first 8 weeks, the system prioritizes **habit formation over physiological optimization** during this critical window. It employs "instigation habits" (celebrating showing up) and flexible "dial methods" (shortening workouts to maintain the streak) rather than rigid compliance.
 *   **Identity-Based Motivation:** The app actively fosters "runner identity" through language and feedback, helping users transition from extrinsic motivation ("I run for health") to intrinsic motivation ("I am a runner").
 *   **Mental Recovery Protocols:** Recognizing that psychology predicts injury recovery better than physiology, the system treats rehabilitation as "training," providing process goals and "fitness retained" metrics to combat the identity loss and depression often associated with setbacks.
+*   **Social Connection:** We prioritize "Connection over Comparison." Features are designed to foster consistency and support (e.g., Squads, Kudos for effort) rather than toxic speed comparisons, acknowledging that social accountability is a primary driver of long-term retention.
 
 ## 5. Key Features
 
@@ -98,3 +99,4 @@ RunningCoach is an **evidence-based, adaptive training companion** designed to g
 *   [08_STRENGTH_PLYOMETRICS.md](./08_STRENGTH_PLYOMETRICS.md) - Integrated strength protocols.
 *   [09_CROSS_TRAINING_REHAB.md](./09_CROSS_TRAINING_REHAB.md) - Equivalency and rehab protocols.
 *   [10_NUTRITION_FUELING.md](./10_NUTRITION_FUELING.md) - Daily and race-day nutrition strategies.
+*   [14_SOCIAL_COMMUNITY.md](./14_SOCIAL_COMMUNITY.md) - Social features, squads, and leaderboards.
