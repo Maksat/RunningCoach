@@ -179,6 +179,66 @@ When multiple sources provide same metric:
 *   Traffic light system uses available markers only
 *   Downweight missing metrics in decision algorithm
 
+### 6.4. HRV Measurement Protocol Validation
+Research-validated HRV measurement requires specific timing and duration protocols. The system must distinguish between optimal and acceptable HRV readings:
+
+**HRV Collection Methods:**
+*   **Preferred:** Morning HRV reading upon waking, before getting out of bed
+*   **Acceptable:** Overnight HRV (RMSSD during sleep from Garmin, Apple Watch, Whoop, Oura)
+*   **Duration:** Readings should span 1-5 minutes for reliability
+*   **Quality Indicators:**
+    *   Readings <1 minute: Flag as "lower quality" but still usable
+    *   Readings taken during activity: Reject as invalid
+    *   Chest strap measurements: Highest quality (gold standard)
+    *   Optical sensor measurements: Acceptable but note reduced accuracy
+
+**Implementation:**
+*   **Data Annotation:** Tag each HRV reading with:
+    *   `measurement_type`: (morning_waking | overnight_sleep | during_activity | unknown)
+    *   `duration_seconds`: Actual measurement duration
+    *   `sensor_type`: (chest_strap | optical_wrist | optical_finger)
+    *   `quality_score`: (high | medium | low)
+*   **Quality Weighting:** Higher quality readings receive more weight in baseline calculations
+*   **User Guidance:** For users without overnight wearables, prompt to use chest strap + HRV app (e.g., Elite HRV, HRV4Training) for morning readings
+*   **Fallback:** If no HRV data available, increase weight of other readiness markers (RHR, sleep quality, subjective recovery)
+
+**Validation Rules:**
+*   Accept HRV 20-120 ms (RMSSD) as physiologically plausible
+*   Flag values outside this range for manual review
+*   Track HRV trends over time; sudden >20% changes may indicate measurement error or illness
+
+### 6.5. Heart Rate Zone Validation
+Vendor-specific HR zones must be normalized to RunningCoach zones based on user's validated physiological baselines (LT HR, Max HR).
+
+**RunningCoach Zone Definitions:**
+*   **Zone 1 (Easy):** <Lactate Threshold HR (~70-80% Max HR)
+*   **Zone 2 (Tempo/Threshold):** LT HR to LT HR + 10 bpm (~85-90% Max HR)
+*   **Zone 3 (VO2max/Hard):** >LT HR + 10 bpm (~90-95% Max HR)
+
+**Baseline Determination:**
+*   **Max HR:** User-provided (220 - age as fallback), updated if exceeded during activities
+*   **LT HR:** Lab tested (gold standard), 30-min time trial field test, or estimated at 90% Max HR
+*   **Zones:** Recalculated whenever baselines updated
+
+**Normalization Process:**
+1. **Ingest vendor zones:** Garmin has 5 zones, Apple Watch uses 3, Polar uses 5
+2. **Map to activity data:** Extract time-in-zone from vendor format
+3. **Recalculate using RunningCoach zones:** Apply user's LT HR and Max HR baselines
+4. **Store both:** Keep vendor zones for reference, use normalized zones for training decisions
+
+**Validation & Alerts:**
+*   **Exceeded Max HR:** If `activity.max_hr > user.max_hr_baseline`:
+    *   Flag activity for review
+    *   If consistently exceeded (3+ activities), prompt: "Your max HR baseline may need updating. Recent activities show HR up to [X] bpm."
+    *   Auto-update max HR if user confirms
+*   **Zone Distribution Analysis:** Track weekly time-in-zone to ensure 80/20 polarized distribution
+*   **HR Drift Detection:** Flag activities where avg HR increases >5% for same pace over 4-week period (may indicate overtraining or dehydration)
+
+**Recalculation Trigger:**
+*   User updates profile (Max HR, LT HR, recent race times)
+*   System detects consistent baseline exceedances
+*   Quarterly automatic review of baselines based on performance trends
+
 ## 7. Data Validation & Quality Control
 
 ### 7.1. Anomaly Detection

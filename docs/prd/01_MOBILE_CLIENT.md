@@ -50,7 +50,7 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
     *   **Visual:** Large circular indicator or background gradient.
     *   **States:**
         *   🟢 **Green:** "All Systems Go." (Text: "Your recovery is optimal. Stick to the plan.")
-        *   🟡 **Yellow:** "Caution." (Text: "Slight fatigue detected. We've adjusted intensity by -10%.")
+        *   🟡 **Yellow:** "Caution." (Text: "Slight fatigue detected. We've reduced today's intensity by 10%." OR "Slight fatigue detected. We've shortened today's workout by 20%.")
         *   🔴 **Red:** "Recovery Needed." (Text: "High risk detected. Today is now a Rest Day.")
     *   **Interaction:** Tap to see breakdown (Sleep score, HRV status, Muscle Soreness).
 3.  **Primary Card: Today's Workout**
@@ -158,7 +158,7 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
 *   **Result:** System calculates "Readiness Score" -> Updates "Today" tab traffic light.
 
 ### 5.2. Post-Workout Logging (The RPE Loop)
-*   **Trigger:** 30 mins after workout end (detected via HealthKit) or Manual Entry.
+*   **Trigger:** 20-30 mins after workout end (detected via HealthKit) or Manual Entry.
 *   **Screen:** Card overlay.
 *   **Question:** "Rate the effort (RPE) for [Workout Name]"
     *   **Scale:** 0 (Rest) to 10 (Max Effort).
@@ -188,7 +188,34 @@ The application uses a **Bottom Navigation Bar** structure with 5 core tabs:
 
 ---
 
-## 6. Design System Guidelines
+## 6. Offline-First Capabilities
+
+The mobile client must function fully offline to support athletes training in areas without connectivity (see [05_SYNC_INFRASTRUCTURE.md](./05_SYNC_INFRASTRUCTURE.md) for technical implementation details).
+
+### 6.1. Offline Functionality
+*   **View Training Plan:** Access next 4-8 weeks of scheduled workouts cached locally
+*   **Log Workouts:** Record completed activities with RPE and notes
+*   **Complete Morning Check-ins:** Submit readiness data (sleep, recovery, soreness)
+*   **Access Library Content:** View cached strength routines, drills, and nutrition guides
+*   **Manual Activity Entry:** Log cross-training or workouts from non-connected devices
+*   **Seamless Background Sync:** Automatic data synchronization when connectivity restored
+
+### 6.2. Offline User Experience
+*   **No Connectivity Required:** Core training workflows function without internet
+*   **Sync Indicator:** Small icon showing sync status (synced/pending/syncing)
+*   **Optimistic Updates:** Changes appear immediately in UI, sync happens in background
+*   **Conflict Resolution:** Backend-generated plan updates take precedence, user notified
+*   **Data Consistency:** Local database serves as UI source of truth
+
+### 6.3. Network State Handling
+*   **Graceful Degradation:** Features requiring real-time data (weather, race results) show cached data with timestamp
+*   **Sync On Launch:** App automatically syncs when opened with connectivity
+*   **Manual Refresh:** "Pull to refresh" gesture forces immediate sync
+*   **Battery Optimization:** Background sync respects OS constraints (iOS background refresh, Android Doze)
+
+---
+
+## 7. Design System Guidelines
 
 *   **Typography:** Clean, sans-serif (Inter or Roboto). Large, readable numbers for stats.
 *   **Color Palette:**

@@ -93,23 +93,36 @@ The API should be RESTful, versioned (e.g., `/api/v1`), and secured via Token Au
     *   Compute **ACWR** = Acute / Chronic.
     *   Compute **TSB** = Chronic - Acute.
     *   Compute **Monotony** (if end of week) = Mean Daily Load / SD.
-    *   **Safety Check**: If ACWR > 1.5 or Monotony > 2.0, flag `RiskAlert`.
+    *   **Safety Check**: If ACWR > 1.5 for 2 consecutive weeks or Monotony > 2.0, flag `RiskAlert`.
 
 ### 5.3. Adaptive Orchestration (The "Brain")
+
+#### 5.3.1. Baseline Establishment Period
+**For new users**, the system collects data for **2-4 weeks** before enabling full adaptive modifications. During this baseline period:
+*   **Track all metrics**: HRV, RPE, Sleep, ACWR, Monotony
+*   **Calculate rolling averages**: Establish personal baseline ± 0.5 standard deviation for each metric
+*   **Enable safety interventions only**: ACWR >1.5 for 2 consecutive weeks, Red traffic lights (3+ markers outside range)
+*   **Disable personalized adaptations**: No Yellow modifications, no responder-based adjustments
+*   **User Communication**: "We're learning your baseline patterns. Full adaptive training activates in [X] days."
+*   **After 2-4 weeks**: Activate personalized adaptations based on established baselines
+
+#### 5.3.2. Adaptive Decision Logic
 1.  **Trigger**:
     *   `DailyMetric` logged (Morning check).
     *   `Activity` missed (Midnight cron job).
     *   `RiskAlert` generated.
 2.  **Action**: Enqueue `EvaluatePlanAdaptationJob`.
 3.  **Logic**:
-    *   **Traffic Light Check**:
+    *   **Baseline Check**: If user is in baseline period (< 2-4 weeks of data), skip to safety checks only.
+    *   **Traffic Light Check** (post-baseline):
         *   Fetch latest HRV, Sleep, RPE, Soreness.
+        *   Compare against individual baselines (rolling 4-week average ± 0.5 SD).
         *   Apply logic:
-            *   **Green**: No change.
-            *   **Yellow**: Reduce intensity 5-10% OR volume 20% for *today's* workout.
-            *   **Red**: Convert today to Rest or Recovery Run.
+            *   **Green**: All markers within normal range → No change.
+            *   **Yellow**: 1-2 markers outside range → Reduce intensity 5-10% OR volume 20% for *today's* workout.
+            *   **Red**: 3+ markers outside range → Convert today to Rest or Recovery Run.
     *   **Structural Check**:
-        *   If `RiskAlert` (ACWR > 1.5), trigger **Plan Regeneration** to lower future volume.
+        *   If `RiskAlert` (ACWR > 1.5 for 2 consecutive weeks), trigger **Plan Regeneration** to lower future volume.
         *   If "Missed Long Run", trigger **Plan Regeneration** to redistribute load (prioritize Long Run over Intervals).
 4.  **Output**:
     *   Update `ScheduledWorkout` entries in DB.
