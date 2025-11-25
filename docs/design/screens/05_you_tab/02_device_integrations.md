@@ -20,8 +20,17 @@ Manage connections to external services (Garmin, Strava, etc.).
 *   **Card: Strava**
     *   **Icon:** Strava Logo.
     *   **Status:** "Connect".
+    *   **Interaction:** Tap "Connect" -> Opens OAuth Web View -> Returns to App with Success Toast.
 
-### 3.2. Sync Status
+### 3.2. Pairing Flow (Modal)
+*   **Trigger:** Tap "Connect" on any integration.
+*   **Steps:**
+    1.  **Explanation:** "We need access to your Activities and Health Metrics to customize your plan."
+    2.  **OAuth Login:** External browser/webview.
+    3.  **Permissions:** User approves scopes.
+    4.  **Success:** "Garmin Connected! Syncing last 30 days of history..." (Progress Bar).
+
+### 3.3. Sync Status
 *   **Footer:** "Last synced: 2 mins ago."
 *   **Action:** "Sync Now" (Manual Trigger).
 

@@ -19,6 +19,7 @@ To visualize the training journey, manage the schedule, and see the "Big Picture
     *   **Left:** Day Name (e.g., "TUE").
     *   **Center:** Workout Name + Distance.
     *   **Right:** Status Icon (Checkmark, Empty Circle, Skipped).
+    *   **Indicator:** Small "Watch" icon if synced to device.
 *   **Interaction:**
     *   **Tap:** Open Workout Details (`DASH-03`).
     *   **Long Press:** Drag and Drop to move to another day.

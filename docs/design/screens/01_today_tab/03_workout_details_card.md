@@ -29,6 +29,10 @@ Detailed view of the specific workout, explaining the "Why" and the structure.
 
 ### 3.4. Actions
 *   **Button:** "Push to Garmin" (if connected).
+    *   **State: Default:** "Push to Garmin" (Icon: Watch).
+    *   **State: Loading:** Spinner "Syncing...".
+    *   **State: Success:** "Sent to Calendar" (Icon: Check).
+    *   **State: Error:** "Retry Sync" (Icon: Refresh).
 *   **Button:** "Mark as Complete" (Manual Log).
 
 ## 4. Dynamic Data

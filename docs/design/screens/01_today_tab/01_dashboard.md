@@ -7,8 +7,8 @@ The "Cockpit" of the application. Provides immediate situational awareness: Read
 
 ## 2. Layout & Structure
 *   **Header:**
-    *   **Left:** Current Date (e.g., "Mon, Oct 24").
-    *   **Right:** Phase Indicator Badge (e.g., "Base Phase • Week 4").
+    *   **Left:** Current Date (e.g., "Mon, Oct 24") | Weather Icon (24°C).
+    *   **Right:** Sync Status (Green Dot / Spinner) | Phase Indicator Badge.
 *   **Body:** Vertical Scroll.
 *   **FAB:** "Log Activity" (Bottom Right).
 
@@ -33,7 +33,7 @@ The "Cockpit" of the application. Provides immediate situational awareness: Read
 *   **Actions:**
     *   **Primary:** "Start" (if tracking) or "Mark Complete".
     *   **Secondary:** "Pair Watch" (if wearable integration active).
-*   **Interaction:** Tap card to view full details (`DASH-03`).
+*   **Interaction:** Tap card to view full details (`DASH-03`) or Start Active Workout (`DASH-05`).
 
 ### 3.3. Secondary Card: Nutrition
 *   **Container:** Smaller Card or Horizontal Strip.
@@ -41,6 +41,7 @@ The "Cockpit" of the application. Provides immediate situational awareness: Read
     *   **Title:** "Fueling Target"
     *   **Data:** "Carbs: 450g | Protein: 120g"
     *   **Context:** "High Carb Day" (based on workout intensity).
+*   **Interaction:** Tap to view Nutrition Detail (`DASH-06`).
 
 ### 3.4. FAB (Floating Action Button)
 *   **Icon:** Plus (+)

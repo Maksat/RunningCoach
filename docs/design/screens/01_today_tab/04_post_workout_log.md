@@ -28,7 +28,17 @@ To capture Internal Load (RPE * Duration) which is the primary metric for the Ad
 ### 3.3. Notes
 *   **Input:** Text Area ("How did you feel?").
 
-### 3.4. Feedback
+### 3.4. Pain/Injury Check
+*   **Question:** "Any pain or niggles?"
+*   **Input:** Yes / No Toggle.
+*   **If Yes:**
+    *   **Body Map:** Tap location (Knee, Shin, Hip, etc.).
+    *   **Severity:** Slider 1-10.
+    *   **Logic:**
+        *   1-3: "We'll keep an eye on it."
+        *   4+: "We recommend switching to cross-training tomorrow." (Triggers Plan Adaptation).
+
+### 3.5. Feedback
 *   **Display:** "Internal Load: 450" (Calculated live as slider moves).
 
 ### 3.5. Actions

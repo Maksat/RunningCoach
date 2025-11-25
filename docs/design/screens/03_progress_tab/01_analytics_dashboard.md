@@ -33,6 +33,14 @@ Long-term tracking of adaptation, fitness trends, and injury risk management.
     *   **Value:** 1.2 (Low Risk).
     *   **Context:** "Good variety in your training."
 
+### 3.4. Performance Trends
+*   **Chart:** "Running Economy"
+    *   **Visual:** Line Chart (HR vs Pace).
+    *   **Insight:** "Your HR at 5:00/km has dropped by 5bpm."
+*   **Chart:** "Lactate Threshold"
+    *   **Visual:** Line Chart (Estimated Threshold Pace).
+    *   **Value:** "4:15/km" (Trending Up).
+
 ## 4. Dynamic Data
 *   **Source:** Calculated from historical `InternalLoad` data.
 
