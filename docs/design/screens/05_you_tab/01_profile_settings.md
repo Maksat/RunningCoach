@@ -13,7 +13,6 @@ Manage user profile, preferences, and account settings.
 ### 3.1. User Header
 *   **Avatar:** User photo or Initials.
 *   **Name:** "Maksat K."
-*   **Stats:** "Level 5 Athlete" (Gamification placeholder).
 
 ### 3.2. Settings Groups
 *   **Group: Physiology**

@@ -15,11 +15,6 @@ Interactive utilities for athletes.
 *   **Input:** Race Distance.
 *   **Output:** "Aim for 600g carbs/day for 2 days pre-race."
 
-### 3.2. Cross-Training Converter
-*   **Input:** Run Duration (e.g., 45 min).
-*   **Input:** Run Intensity (Easy).
-*   **Output:** "Bike: 60 min @ HR 120-130."
-
 ## 4. Dynamic Data
 *   **Logic:** Simple arithmetic based on research formulas.
 

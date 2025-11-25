@@ -31,7 +31,6 @@ Provides a detailed breakdown of daily nutrition targets, meal timing advice, an
 ### 3.3. Hydration Strategy
 *   **Visual:** Water Bottle Icon / Counter.
 *   **Target:** "3.5L Goal".
-*   **Advice:** "Add electrolytes today due to high sweat loss expected (Weather: 28°C)."
 
 ### 3.4. Tools
 *   **Button:** "Log Meal" (Link to MyFitnessPal or simple internal logger).

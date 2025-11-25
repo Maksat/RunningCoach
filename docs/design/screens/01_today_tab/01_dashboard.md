@@ -7,10 +7,9 @@ The "Cockpit" of the application. Provides immediate situational awareness: Read
 
 ## 2. Layout & Structure
 *   **Header:**
-    *   **Left:** Current Date (e.g., "Mon, Oct 24") | Weather Icon (24°C).
-    *   **Right:** Sync Status (Green Dot / Spinner) | Phase Indicator Badge.
+    *   **Left:** Current Date (e.g., "Mon, Oct 24").
+    *   **Right:** Phase Indicator Badge (e.g., "Build Phase - Week 4").
 *   **Body:** Vertical Scroll.
-*   **FAB:** "Log Activity" (Bottom Right).
 
 ## 3. UI Components
 
@@ -43,14 +42,9 @@ The "Cockpit" of the application. Provides immediate situational awareness: Read
     *   **Context:** "High Carb Day" (based on workout intensity).
 *   **Interaction:** Tap to view Nutrition Detail (`DASH-06`).
 
-### 3.4. FAB (Floating Action Button)
-*   **Icon:** Plus (+)
-*   **Action:** Opens menu -> "Log Manual Activity", "Log Body Metric", "Add Note".
-
 ## 4. Dynamic Data
 *   **Readiness Score:** Calculated from Sleep + HRV + Subjective input.
 *   **Workout:** Pulled from `TrainingPlan` for `CurrentDate`.
-*   **Weather:** (Optional) Icon next to date if API available.
 
 ## 5. Design System References
 *   **Colors:** Uses Traffic Light system (Emerald/Amber/Red) for Readiness.
