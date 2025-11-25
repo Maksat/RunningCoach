@@ -149,17 +149,28 @@ Normalize all wearable data into RunningCoach internal format:
 }
 ```
 
-**Daily Health Schema:**
+**Daily Health Schema (Mapped to 4-System Model):**
 ```json
 {
   "user_id": "uuid",
   "date": "2025-01-15",
+  // Cardio-Respiratory System
   "resting_hr": 48,
   "hrv_rmssd": 65,
+  "vo2_max_estimate": 54,
+  
+  // Neural / CNS System
   "sleep_duration_minutes": 450,
-  "sleep_quality_score": 8,
-  "morning_recovery_rating": 7,
-  "soreness_rating": 3
+  "sleep_quality_score": 8, // 1-10
+  "stress_score": 25, // 0-100 (Garmin Stress / Oura)
+  
+  // Muscular System (Subjective + inferred)
+  "soreness_rating": 3, // 1-10 (Morning Check-in)
+  "perceived_fatigue": 4, // 1-10
+  
+  // Skeletal System (Computed)
+  "steps_yesterday": 12500,
+  "ground_contact_balance": 50.2 // If available (asymmetry detection)
 }
 ```
 

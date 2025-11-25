@@ -1,7 +1,7 @@
 # PRD: Load Management & ACWR System
 
 ## 1. Introduction
-This document defines the load management and monitoring system that forms the foundation of RunningCoach's injury prevention approach. Research shows ACWR above 1.5 produces **4-fold injury increases**, making this the most critical safety system in the application.
+This document defines the load management and monitoring system that forms the foundation of RunningCoach's injury prevention approach. Research shows ACWR above 1.5 produces **4-fold injury increases**, making this the most critical safety system in the application. In the **4-System Analysis Engine**, ACWR is the primary input for the **Skeletal System** status.
 
 ## 2. Research Foundation
 *   **ACWR Sweet Spot:** 0.8-1.3 represents optimal range for adaptation without injury

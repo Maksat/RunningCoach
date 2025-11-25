@@ -39,18 +39,21 @@ This document defines the architecture for data synchronization between the Mobi
 To minimize data usage and battery drain, only changed data is transmitted.
 
 **Upstream (Client → Backend):**
-*   Completed workouts with RPE and notes
-*   Manual activity logs
-*   Daily check-in data (recovery rating, sleep, soreness)
-*   Plan adjustments (user-initiated reschedules)
-*   Settings changes
+*   **Life Events:** "Sick", "Travel", "Injury" reports.
+*   **Completed Workouts:** With RPE and notes.
+*   **Manual Activity Logs:** For non-wearable activities.
+*   **Daily Check-in Data:** Recovery rating, sleep, soreness.
+*   **Plan Adjustments:** User-initiated reschedules.
+*   **Settings Changes:** Goal updates, etc.
 
 **Downstream (Backend → Client):**
-*   New/adapted training plan updates
-*   Processed activity insights (ACWR, TSB calculations)
-*   External data updates (wearable data normalized by backend)
-*   Coach's Notes for upcoming workouts
-*   Alerts and notifications (injury risk warnings, recovery week triggers)
+*   **Body State Snapshot:** The 4-system readiness assessment (Cardio, Muscular, Skeletal, CNS).
+*   **New/Adapted Training Plan:** Updates based on the Body State.
+*   **Life Event Protocols:** Active protocols (e.g., "Return to Run" schedule after sickness).
+*   **Processed Activity Insights:** ACWR, TSB calculations.
+*   **External Data Updates:** Wearable data normalized by backend.
+*   **Coach's Notes:** Contextual guidance for upcoming workouts.
+*   **Alerts:** Injury risk warnings, recovery week triggers.
 
 ### 4.2. Synchronization Triggers
 
