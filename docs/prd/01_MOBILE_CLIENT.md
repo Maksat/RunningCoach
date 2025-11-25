@@ -227,3 +227,8 @@ The mobile client must function fully offline to support athletes training in ar
     *   **Backgrounds:** Off-white/Light Grey (Day mode), Dark Slate (Night mode).
 *   **Iconography:** Simple, outlined icons. Filled icons for active states.
 *   **Charts:** Minimalist. Avoid 3D effects. Use clear threshold lines.
+
+> [!TIP]
+> **Detailed Design System**
+> For the comprehensive visual guide, color codes, and component library, please refer to the [UI/UX Design System & Strategy](../design/UI_UX_DESIGN_SYSTEM.md).
+
