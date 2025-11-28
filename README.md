@@ -111,11 +111,97 @@ Key research findings informing our approach:
 
 ## Getting Started
 
-[Installation instructions to be added]
+## Getting Started
 
-[API setup and wearable device connection guide to be added]
+### Prerequisites
+- **Docker** & **Docker Compose**: For running the application stack locally.
+- **Terraform**: For provisioning AWS infrastructure.
+- **Node.js 20+**: For local development without Docker.
 
-[Quick start guide for first-time users to be added]
+### Local Development (Docker)
+
+The easiest way to run the backend is using Docker Compose, which sets up the API server, PostgreSQL database, and Redis cache.
+
+1. **Build and Start Services**
+   ```bash
+   docker-compose up -d --build
+   ```
+
+2. **Verify Running Containers**
+   ```bash
+   docker-compose ps
+   ```
+
+3. **Access the API**
+   The backend API will be available at `http://localhost:3000`.
+   You can verify it's running with:
+   ```bash
+   curl http://localhost:3000
+   ```
+
+4. **Stop Services**
+   ```bash
+   docker-compose down
+   ```
+
+### Infrastructure Setup (Terraform)
+
+The `terraform/` directory contains the Infrastructure as Code (IaC) definitions for deploying to AWS (ECS Fargate, RDS, ElastiCache, S3).
+
+#### AWS Preparation
+
+1. **Create an AWS Account**: If you don't have one, sign up at [aws.amazon.com](https://aws.amazon.com/).
+2. **Create an IAM User**:
+   - Go to the IAM Console.
+   - Create a user with **Programmatic Access**.
+   - Attach the `AdministratorAccess` policy (for development) or specific permissions for ECS, RDS, ElastiCache, VPC, and S3.
+3. **Install AWS CLI**: Follow the [official guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to install the AWS CLI.
+4. **Configure Credentials**:
+   Run the following command and enter your Access Key ID and Secret Access Key:
+   ```bash
+   aws configure
+   ```
+   Alternatively, export them as environment variables:
+   ```bash
+   export AWS_ACCESS_KEY_ID="your_access_key"
+   export AWS_SECRET_ACCESS_KEY="your_secret_key"
+   export AWS_REGION="us-east-1"
+   ```
+
+#### Testing Infrastructure Configuration
+
+Before deploying, you should verify the Terraform configuration:
+
+1. **Navigate to the terraform directory**
+   ```bash
+   cd terraform
+   ```
+
+2. **Initialize Terraform**
+   Downloads providers and initializes the backend.
+   ```bash
+   terraform init
+   ```
+
+3. **Validate Configuration**
+   Checks for syntax errors and validity.
+   ```bash
+   terraform validate
+   ```
+
+4. **Plan Deployment**
+   Shows what resources will be created without actually creating them.
+   ```bash
+   terraform plan
+   ```
+
+#### Deploying to AWS
+
+To apply the changes and create resources:
+```bash
+terraform apply
+```
+*Note: Ensure you have AWS credentials configured in your environment (e.g., `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`).*
 
 ## Contributing
 
